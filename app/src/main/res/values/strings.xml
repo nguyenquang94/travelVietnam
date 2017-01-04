@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">TravelVietNamApp</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="content_authority">com.example.kai.travelvietnamapp</string>
+    <string name="load_data">Load Data</string>
+    <string name="category">category</string>
+    <string name="str_loading">Loading</string>
+    <string name="defect_detail_ac_blank"></string>
+    <string name="url_image_small">http://bwhere.vn/uploads/small/</string>
+    <string name="url_image_big">http://bwhere.vn/uploads/big/</string>
+</resources>

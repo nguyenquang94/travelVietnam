@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <corners
+        android:bottomLeftRadius="@dimen/material_item_margin"
+        android:bottomRightRadius="@dimen/material_item_margin"
+        android:topLeftRadius="@dimen/material_item_margin"
+        android:topRightRadius="@dimen/material_item_margin" />
+
+    <stroke
+        android:width="@dimen/stroke_width"
+        android:color="@color/bg_defect_rp" />
+
+    <solid android:color="@color/color_white_2" />
+
+</shape>

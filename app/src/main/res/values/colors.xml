@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="color_white_2">#ffffff</color>
+    <color name="bg_defect_rp">#EEEEEE</color>
+    <color name="bg_toolbar">#DB0A5B</color>
+</resources>
