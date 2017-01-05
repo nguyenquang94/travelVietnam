@@ -42,7 +42,7 @@ public class AcDetailPlace extends AppCompatActivity implements LoaderManager.Lo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ac_detail_place);
+        setContentView(R.layout.ac_detail_place);
         init();
         getValuesFromBundle();
         getSupportLoaderManager().initLoader(LOADER_IMAGE, null, this);

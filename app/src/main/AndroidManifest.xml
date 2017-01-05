@@ -25,6 +25,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDYaGoSg5cWgSojEe4IXeVD0q8aQOj0DTI" />
+        <!--  <meta-data
+              android:name="com.google.android.geo.API_KEY"
+              android:value="AIzaSyDOysldeATAuvoX40unS8eWCU7cr19aDxY" />-->
 
         <provider
             android:name=".data.TravelProvider"
@@ -37,5 +40,4 @@
             android:name=".AcDetailPlace"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
-
 </manifest>

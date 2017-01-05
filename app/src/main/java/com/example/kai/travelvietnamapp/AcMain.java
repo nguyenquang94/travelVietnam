@@ -70,8 +70,6 @@ public class AcMain extends AppCompatActivity implements NavigationView.OnNaviga
 
     private Marker markerPlace;
 
-    private Cursor cursorPlace;
-
     private com.github.clans.fab.FloatingActionButton floatingActionButton;
 
     private static final String[] CATEGORT_COLUMNS = {
@@ -95,13 +93,14 @@ public class AcMain extends AppCompatActivity implements NavigationView.OnNaviga
     private static final int GET_CATEGORY = 1;
     private static final int GET_PLACE = 2;
 
-    ArrayList<EnPlace> listdemo;
+    private Cursor cursorMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+        setContentView(R.layout.ac_main);
+        getSupportLoaderManager().initLoader(GET_CATEGORY, null, this);
+        getSupportLoaderManager().initLoader(GET_PLACE, null, this);
         mMapFragment = MapFragment.newInstance();
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.myMap);
@@ -111,7 +110,7 @@ public class AcMain extends AppCompatActivity implements NavigationView.OnNaviga
         listIdCategory = new ArrayList<Integer>();
         listEnPlaces = new ArrayList<EnPlace>();
         listMarker = new ArrayList<LatLng>();
-        listdemo = new ArrayList<EnPlace>();
+
         lvCategory = (ListView) findViewById(R.id.left_drawer);
         //onclick floatting button to show navigation drawer
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -137,9 +136,6 @@ public class AcMain extends AppCompatActivity implements NavigationView.OnNaviga
         lvCategory.setDividerHeight(0);
         DrawerAdapter drawerAdapter = new DrawerAdapter(AcMain.this, R.layout.custom_listview_drawer, listEnMenuDrawers);
         lvCategory.setAdapter(drawerAdapter);
-
-        getSupportLoaderManager().initLoader(GET_CATEGORY, null, this);
-        getSupportLoaderManager().initLoader(GET_PLACE, null, this);
 
     }
 
@@ -167,7 +163,7 @@ public class AcMain extends AppCompatActivity implements NavigationView.OnNaviga
                 getCategoryData(data);
                 break;
             case GET_PLACE:
-                cursorPlace = data;
+                cursorMarker = data;
                 GetPlaceData getPlaceData = new GetPlaceData();
                 getPlaceData.execute(data);
                 break;
@@ -187,33 +183,33 @@ public class AcMain extends AppCompatActivity implements NavigationView.OnNaviga
         if (imgActive == false) {
             for (int i = 0; i < listEnPlaces.size(); i++) {
                 if (listEnPlaces.get(i).getCategoryId() == position) {
-                    listdemo.add(listEnPlaces.get(i));
-                    listEnPlaces.remove(i);
+                    listEnPlaces.remove(listEnPlaces.get(i));
                 }
             }
+            UpdateMarker updateMarker = new UpdateMarker();
+            updateMarker.execute(listEnPlaces);
         } else {
-            for (int i = 0; i < listdemo.size(); i++) {
-                if (listdemo.get(i).getCategoryId() == position) {
-                    listEnPlaces.add(listdemo.get(i));
-                }
-            }
+            GetPlaceData getPlaceData = new GetPlaceData();
+            getPlaceData.execute(cursorMarker);
         }
-        UpdateMarker updateMarker = new UpdateMarker();
-        updateMarker.execute(listEnPlaces);
+
     }
 
-    public class UpdateMarker extends AsyncTask<ArrayList<EnPlace>, Void, ArrayList<EnPlace>> {
+    public class UpdateMarker extends AsyncTask<ArrayList<EnPlace>, ArrayList<EnPlace>, ArrayList<EnPlace>> {
 
         @Override
         protected ArrayList<EnPlace> doInBackground(ArrayList<EnPlace>... params) {
             ArrayList<EnPlace> arrayList = params[0];
+            publishProgress(arrayList);
             return arrayList;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<EnPlace> list) {
-            for (int i = 0; i < list.size(); i++) {
-                EnPlace enPlace = list.get(i);
+        protected void onProgressUpdate(ArrayList<EnPlace>... values) {
+            super.onProgressUpdate(values);
+            ArrayList<EnPlace> enPlaceArrayList = values[0];
+            for (int i = 0; i < enPlaceArrayList.size(); i++) {
+                EnPlace enPlace = enPlaceArrayList.get(i);
                 int resIdMarker = AppUtils.setImageId(enPlace.getCategoryId());
                 markerPlace = mGoogleMap.addMarker(new MarkerOptions()
                         .position(new LatLng(enPlace.getLatitude(), enPlace.getLongitude()))
@@ -391,7 +387,7 @@ public class AcMain extends AppCompatActivity implements NavigationView.OnNaviga
                     new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 13));
 
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(21.0305568, 105.85241675))      // Sets the center of the map to location user
+                    .target(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))      // Sets the center of the map to location user
                     .zoom(15)                   // Sets the zoom
                     .bearing(90)                // Sets the orientation of the camera to east
                     .tilt(40)                   // Sets the tilt of the camera to 30 degrees

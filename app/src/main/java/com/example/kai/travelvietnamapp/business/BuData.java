@@ -2,7 +2,6 @@ package com.example.kai.travelvietnamapp.business;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.net.Uri;
 
 import com.example.kai.travelvietnamapp.data.DatabaseConstants;
 import com.example.kai.travelvietnamapp.data.TravelContract;
@@ -20,7 +19,7 @@ import java.util.List;
 public class BuData {
     private static final String LOG_TAG = BuData.class.getSimpleName();
 
-    public static Uri saveCategoryData(Context context, List<EnCategory> listCategory) {
+    public static Integer saveCategoryData(Context context, List<EnCategory> listCategory) {
         ContentValues cv = new ContentValues();
         if (context == null || listCategory.size() == 0) {
             return null;
@@ -37,7 +36,7 @@ public class BuData {
             cv.put(DatabaseConstants.ICON_SMALL, listCategory.get(i).getIconSmall());
             context.getContentResolver().insert(TravelContract.CategoryEntry.CONTENT_URI, cv);
         }
-        return null;
+        return cv.size();
 
     }
 

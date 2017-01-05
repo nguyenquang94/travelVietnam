@@ -1,14 +1,13 @@
 package com.example.kai.travelvietnamapp;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.example.kai.travelvietnamapp.business.BuData;
@@ -23,6 +22,8 @@ import com.example.kai.travelvietnamapp.rest.ApiInterfaceCategory;
 import com.example.kai.travelvietnamapp.rest.ApiInterfacePlace;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,8 +41,9 @@ public class AcStart extends AppCompatActivity implements LoaderManager.LoaderCa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ac_start);
+        setContentView(R.layout.ac_start);
         getSupportLoaderManager().initLoader(GET_CATEGORY, null, this);
+
     }
 
     @Override
@@ -64,9 +66,18 @@ public class AcStart extends AppCompatActivity implements LoaderManager.LoaderCa
                 if (data.getCount() == 0) {
                     DowloadDataAsyncTask dowloadDataAsyncTask = new DowloadDataAsyncTask();
                     dowloadDataAsyncTask.execute();
+                    Intent i = getBaseContext().getPackageManager()
+                            .getLaunchIntentForPackage(getBaseContext().getPackageName() );
+
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK );
+                    startActivity(i);
                 } else {
-                    Intent intent = new Intent(AcStart.this, AcMain.class);
-                    startActivity(intent);
+                    new Timer().schedule(new TimerTask() {
+                        public void run() {
+
+                            startActivity(new Intent(AcStart.this, AcMain.class));
+                        }
+                    }, 2000);
                 }
                 break;
         }
@@ -78,11 +89,11 @@ public class AcStart extends AppCompatActivity implements LoaderManager.LoaderCa
     }
 
     private class DowloadDataAsyncTask extends AsyncTask<Void, Boolean, Boolean> {
-        private ProgressDialog prgDialog;
         boolean isUpdated;
 
         @Override
         protected Boolean doInBackground(Void... params) {
+
             ApiInterfaceCategory apiService = ApiClient.getClient().create(ApiInterfaceCategory.class);
             Call<EnCategoryResponse> call = apiService.getAll();
             call.enqueue(new Callback<EnCategoryResponse>() {
@@ -104,7 +115,7 @@ public class AcStart extends AppCompatActivity implements LoaderManager.LoaderCa
                 @Override
                 public void onResponse(Call<EnPlaceResponse> call, Response<EnPlaceResponse> response) {
                     List<EnPlace> places = response.body().getData();
-                    isUpdated = BuData.savePlaceData(AcStart.this, places);
+                    BuData.savePlaceData(AcStart.this, places);
                 }
 
                 @Override
@@ -117,21 +128,10 @@ public class AcStart extends AppCompatActivity implements LoaderManager.LoaderCa
         }
 
         @Override
-        protected void onPreExecute() {
-            prgDialog = new ProgressDialog(AcStart.this);
-            prgDialog.setMessage(AcStart.this.getResources().getText(R.string.str_loading));
-            prgDialog.setCancelable(false);
-            prgDialog.show();
-        }
-
-        @Override
-        protected void onProgressUpdate(Boolean... values) {
-            super.onProgressUpdate(values);
-            if (values[0] = true) {
-                prgDialog.dismiss();
-                Intent intent = new Intent(AcStart.this, AcMain.class);
-                startActivity(intent);
-            }
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            Intent intent = new Intent(AcStart.this, AcMain.class);
+            startActivity(intent);
         }
     }
 }
